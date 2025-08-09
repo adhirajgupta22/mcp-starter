@@ -218,7 +218,12 @@ async def make_img_black_and_white(
     except Exception as e:
         raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(e)))
 
-@mcp.tool(description="Generate Gmail OAuth consent URL for testing.")
+GMAIL_OAUTH_DESCRIPTION = RichToolDescription(
+    description="Start Gmail authentication via Google OAuth 2.0 to allow reading and sending emails.",
+    use_when="Use this when the user wants to connect their Gmail account or grant access to their emails.",
+    side_effects="Opens a Google login & consent screen; once approved, the server receives tokens for API access."
+)
+@mcp.tool(description=GMAIL_OAUTH_DESCRIPTION.model_dump_json())
 async def get_gmail_consent_url() -> str:
     base_url = "https://accounts.google.com/o/oauth2/v2/auth"
     params = {
