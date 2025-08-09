@@ -9,6 +9,11 @@ from mcp.server.auth.provider import AccessToken
 from mcp.types import TextContent, ImageContent, INVALID_PARAMS, INTERNAL_ERROR
 from pydantic import BaseModel, Field, AnyUrl
 
+import urllib.parse
+from fastapi import Request
+from fastmcp.server.fastapi_server import get_fastapi_app
+
+
 import markdownify
 import httpx
 import readabilipy
@@ -18,9 +23,19 @@ load_dotenv()
 
 TOKEN = os.environ.get("AUTH_TOKEN")
 MY_NUMBER = os.environ.get("MY_NUMBER")
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
+REDIRECT_URI = "https://mcp-starter-8jmd.onrender.com/oauth2callback"
 
 assert TOKEN is not None, "Please set AUTH_TOKEN in your .env file"
 assert MY_NUMBER is not None, "Please set MY_NUMBER in your .env file"
+
+assert GOOGLE_CLIENT_ID, "Please set GOOGLE_CLIENT_ID in your .env"
+assert GOOGLE_CLIENT_SECRET, "Please set GOOGLE_CLIENT_SECRET in your .env"
+
+SCOPES = [
+    "https://www.googleapis.com/auth/gmail.readonly"
+]  # minimal scope just for testing
 
 # --- Auth Provider ---
 class SimpleBearerAuthProvider(BearerAuthProvider):
@@ -202,6 +217,50 @@ async def make_img_black_and_white(
         return [ImageContent(type="image", mimeType="image/png", data=bw_base64)]
     except Exception as e:
         raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(e)))
+
+@mcp.tool(description="Generate Gmail OAuth consent URL for testing.")
+async def get_gmail_consent_url() -> str:
+    base_url = "https://accounts.google.com/o/oauth2/v2/auth"
+    params = {
+        "client_id": GOOGLE_CLIENT_ID,
+        "redirect_uri": REDIRECT_URI,
+        "response_type": "code",
+        "scope": " ".join(SCOPES),
+        "access_type": "offline",
+        "prompt": "consent",
+    }
+    consent_url = f"{base_url}?{urllib.parse.urlencode(params)}"
+    return f"Click here to authorize Gmail access: {consent_url}"
+
+app = get_fastapi_app()
+
+@app.get("/oauth2callback")
+async def oauth2callback(request: Request):
+    code = request.query_params.get("code")
+    if not code:
+        return {"error": "No code received"}
+
+    # Exchange code for tokens
+    async with httpx.AsyncClient() as client:
+        token_resp = await client.post(
+            "https://oauth2.googleapis.com/token",
+            data={
+                "code": code,
+                "client_id": GOOGLE_CLIENT_ID,
+                "client_secret": GOOGLE_CLIENT_SECRET,
+                "redirect_uri": REDIRECT_URI,
+                "grant_type": "authorization_code",
+            },
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
+    if token_resp.status_code != 200:
+        print(f"❌ Token exchange failed: {token_resp.text}")
+        return {"error": "Token exchange failed", "details": token_resp.text}
+
+    tokens = token_resp.json()
+    print("✅ Received tokens from Google:", tokens)  # Will show in Render logs
+    return {"message": "OAuth successful! Check Render logs for tokens."}
 
 # --- Run MCP Server ---
 async def main():
