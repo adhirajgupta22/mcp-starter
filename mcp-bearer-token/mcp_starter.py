@@ -404,6 +404,35 @@ async def get_movie_venue_details(
 
     return json.dumps(results, indent=2, ensure_ascii=False)
 
+@mcp.tool(description=(
+    "Generates a direct seat-layout link on BookMyShow for booking tickets. "
+    "Inputs must be provided exactly as specified: 'movie_id', 'venue_id', 'session_id', 'date' (YYYYMMDD), and 'city' (full, correct name). "
+    "The returned link takes the user directly to the seat selection page. "
+    "Note: movie_id, session_id, and venue_id are internal identifiers and must NOT be shown to the user."
+))
+async def book_movie_tickets(
+    movie_id: Annotated[str, Field(description="The exact internal movie ID (e.g., ET00440409)")],
+    venue_id: Annotated[str, Field(description="The exact internal venue ID (e.g., RMIK)")],
+    session_id: Annotated[str, Field(description="The exact internal session ID (e.g., 12400)")],
+    date: Annotated[str, Field(description="Date of the show in YYYYMMDD format (e.g., 20250810)")],
+    city: Annotated[str, Field(description="Full, correct city name (e.g., Kanpur)")]
+) -> str:
+    """
+    Constructs the full BookMyShow seat-layout URL for a specific movie showtime, given the required identifiers.
+
+    Args:
+        movie_id (str): Internal movie identifier from BMS (hidden from end-user).
+        venue_id (str): Internal venue identifier from BMS (hidden from end-user).
+        session_id (str): Internal session identifier from BMS (hidden from end-user).
+        date (str): Show date in YYYYMMDD format.
+        city (str): Full city name (properly spelled).
+
+    Returns:
+        str: A direct link to the seat selection page for the given movie showtime.
+    """
+    city_slug = slugify(city)
+    return f"https://in.bookmyshow.com/movies/{city_slug}/seat-layout/{movie_id}/{venue_id}/{session_id}/{date}"
+
 # --- Run MCP Server ---
 async def main():
     print("🚀 Starting MCP server on http://0.0.0.0:8086")
