@@ -216,8 +216,8 @@ async def make_img_black_and_white(
 
 token = os.environ.get("API_TOKEN")
 FETCH_MOVIES_DESCRIPTION = RichToolDescription(
-    description="Fetches movies for a given city from BookMyShow and returns JSON with id and name.",
-    use_when="Use this tool when the user wants to get a list of movies playing in a specific city.",
+    description="Fetches all the movies for a given city from BookMyShow which the user can watch in theatres and returns JSON with id and name.",
+    use_when="Use this tool when the user wants to get a list of all movies playing in a specific city.",
     side_effects="Returns internal identifier movie_id which should NOT be shown to the user but save them for internal use."
 )
 @mcp.tool(description=FETCH_MOVIES_DESCRIPTION.model_dump_json())
@@ -265,8 +265,8 @@ async def get_movies(
     return json.dumps({"movies": list(unique_movies.values())}, ensure_ascii=False)
 
 
-def slugify(text):
-    return re.sub(r'[^a-z0-9-]', '', re.sub(r'\s+', '-', text.strip().lower()))
+# def slugify(text):
+#     return re.sub(r'[^a-z0-9-]', '', re.sub(r'\s+', '-', text.strip().lower()))
 
 # @mcp.tool(description=(
 #     "Fetch detailed venue and showtime information for a movie from BookMyShow.\n\n"
