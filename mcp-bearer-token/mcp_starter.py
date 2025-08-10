@@ -236,7 +236,7 @@ async def get_movies(
                 ]
             }
     """
-    # scrape.do token
+    token = "c7cda0a41de3446abf92b8b0154c65e7922123609fe"  # scrape.do token
     city_slug = city.strip().lower().replace(" ", "-")
     url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
     encoded_url = urllib.parse.quote(url)
@@ -259,18 +259,13 @@ async def get_movies(
     return json.dumps({"movies": list(unique_movies.values())}, ensure_ascii=False)
 
 
-def slugify(text):
-    return re.sub(r'[^a-z0-9-]', '', re.sub(r'\s+', '-', text.strip().lower()))
+
+def slugify(text: str) -> str:
+    return text.strip().lower().replace(" ", "-")
 
 @mcp.tool(description=(
-    "Fetch detailed venue and showtime information for a movie from BookMyShow.\n\n"
-    "IMPORTANT INPUT REQUIREMENTS:\n"
-    "1. City and movie names must be provided in full, correctly spelled,\n "
-    "2. Date must be in YYYYMMDD format (e.g., '20250810').\n"
-    "3. Movie ID (e.g., 'ET00399488') can be provided for faster results; "
-    "if omitted, the tool will attempt to find it automatically.\n"
-    "4. Inputs must be exact — incorrect spelling, partial names, or wrong formats will result in no data.\n"
-    "Note: movie_id, session_id, and venue_id are internal identifiers and must NOT be shown to the user and you have to use some of these for booking tickets for the user while calling tool book_movie_tickets"
+    "Fetch detailed venue and showtime information for a movie from BookMyShow, "
+    "and also generate direct seat-layout links for each show."
 ))
 async def get_movie_venue_details(
     movie_name: Annotated[str, Field(description="Full, correctly spelled name of the movie (e.g., 'Dhadak 2').")],
@@ -278,51 +273,7 @@ async def get_movie_venue_details(
     movie_id: Annotated[str, Field(description="Movie ID from BookMyShow (e.g., 'ET00399488'), or empty string to auto-detect.")],
     city: Annotated[str, Field(description="Full, correctly spelled name of the city (e.g., 'Kanpur').")]
 ) -> str:
-    """
-    Fetch venue and showtime details for a given movie in a specified city on a given date from BookMyShow.
-
-    This tool:
-    1. Validates and slugifies the movie and city names for URL construction.
-    2. Optionally auto-discovers the movie ID if not provided.
-    3. Retrieves the HTML page for the Buy Tickets view via scrape.do proxy.
-    4. Extracts the _INITIAL_STATE_ JSON from the HTML.
-    5. Parses and returns structured details of venues, showtimes, seat categories, and prices.
-
-    Args:
-        movie_name (str): Full, correctly spelled movie name.
-        target_date (str): Date in YYYYMMDD format.
-        movie_id (str): Optional BookMyShow movie ID; if omitted, auto-detection is attempted.
-        city (str): Full, correctly spelled city name.
-
-    Returns:
-        str: JSON-formatted string with the following structure:
-            {
-                "movieId": "<BookMyShow Movie ID>",
-                "venues": [
-                    {
-                        "venueName": "<Theatre Name>",
-                        "venueCode": "<Internal Venue Code>",
-                        "shows": [
-                            {
-                                "time": "<Show Time>",
-                                "sessionId": "<Internal Session ID>",
-                                "categories": [
-                                    {
-                                        "seatType": "<Category Name>",
-                                        "price": "<Ticket Price>"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-
-    Raises:
-        ValueError: If the movie cannot be found in the specified city.
-        RuntimeError: If the __INITIAL_STATE__ marker is not found in the HTML.
-    """
-
+    
     city_slug = slugify(city)
     movie_slug = slugify(movie_name)
 
@@ -334,9 +285,8 @@ async def get_movie_venue_details(
         resp = requests.get(api_url)
         soup = BeautifulSoup(resp.text, "html.parser")
 
-        movie_id = None
         for a in soup.find_all("a", href=True):
-            if f"/movies/{city_slug}/" in a["href"] and movie_name.lower().replace(" ", "-") in a["href"]:
+            if f"/movies/{city_slug}/" in a["href"] and movie_slug in a["href"]:
                 parts = a["href"].rstrip("/").split("/")
                 if len(parts) >= 5:
                     movie_id = parts[-1]
@@ -344,19 +294,19 @@ async def get_movie_venue_details(
         if not movie_id:
             raise ValueError(f"Movie '{movie_name}' not found in {city}.")
 
-    # Step 2: Construct buytickets URL
+    # Step 2: Fetch Buy Tickets page
     target_url = f"https://in.bookmyshow.com/movies/{city_slug}/{movie_slug}/buytickets/{movie_id}/{target_date}"
     encoded_target_url = urllib.parse.quote(target_url)
     scrape_url = f"http://api.scrape.do/?token={token}&url={encoded_target_url}"
-
-    # Step 3: Extract JSON from INITIAL_STATE
     html = requests.get(scrape_url).text
+
+    # Step 3: Extract JSON from __INITIAL_STATE__
     marker = "__INITIAL_STATE__"
     start = html.find(marker)
     if start == -1:
-        raise RuntimeError("Could not find INITIAL_STATE in HTML")
-
+        raise RuntimeError("Could not find _INITIAL_STATE_ in HTML")
     start += len(marker)
+
     brace_count = 0
     in_string = False
     escaped = False
@@ -382,7 +332,7 @@ async def get_movie_venue_details(
                     data = json.loads(json_str)
                     break
 
-    # Step 4: Extract venue and showtime details
+    # Step 4: Extract venues & shows
     results = []
     show_dates = data.get("showtimesByEvent", {}).get("showDates", {})
     date_obj = show_dates.get(target_date, {})
@@ -391,13 +341,14 @@ async def get_movie_venue_details(
     for widget in widgets:
         if widget.get("type") == "groupList" and widget.get("id") == "List_1":
             for group in widget.get("data", []):
-                if group.get("type") == "venueGroup" and group.get("id") == "Venue_GROUP_1":
+                if group.get("type") == "venueGroup":
                     for venue in group.get("data", []):
                         if venue.get("type") == "venue-card":
                             vdata = venue.get("additionalData", {})
                             venue_name = vdata.get("venueName")
                             venue_code = vdata.get("venueCode")
                             theatre_info = {
+                                "movieId": movie_id,
                                 "venueName": venue_name,
                                 "venueCode": venue_code,
                                 "shows": []
@@ -412,25 +363,27 @@ async def get_movie_venue_details(
                                     }
                                     for cat in show.get("additionalData", {}).get("categories", [])
                                 ]
+                                # Generate seat-layout link
+                                seat_url = await book_movie_tickets(
+                                    movie_id=movie_id,
+                                    venue_id=venue_code,
+                                    session_id=session_id,
+                                    date=target_date,
+                                    city=city
+                                )
                                 theatre_info["shows"].append({
                                     "time": show_time,
                                     "sessionId": session_id,
-                                    "categories": categories
+                                    "categories": categories,
+                                    "seatLayoutUrl": seat_url
                                 })
                             results.append(theatre_info)
-    final_output = {
-        "movieId": movie_id,
-        "venues": results
-    }
 
-    return json.dumps(final_output, indent=2, ensure_ascii=False)
+    return json.dumps(results, indent=2, ensure_ascii=False)
 
 
 @mcp.tool(description=(
-    "Generates a direct seat-layout link on BookMyShow for booking tickets. "
-    "Inputs must be provided exactly as specified: 'movie_id', 'venue_id', 'session_id', 'date' (YYYYMMDD), and 'city' (full, correct name). "
-    "The returned link takes the user directly to the seat selection page. "
-    "Note: movie_id, session_id, and venue_id are internal identifiers and must NOT be shown to the user."
+    "Generates a direct seat-layout link on BookMyShow for booking tickets."
 ))
 async def book_movie_tickets(
     movie_id: Annotated[str, Field(description="The exact internal movie ID (e.g., ET00440409)")],
@@ -439,19 +392,6 @@ async def book_movie_tickets(
     date: Annotated[str, Field(description="Date of the show in YYYYMMDD format (e.g., 20250810)")],
     city: Annotated[str, Field(description="Full, correct city name (e.g., Kanpur)")]
 ) -> str:
-    """
-    Constructs the full BookMyShow seat-layout URL for a specific movie showtime, given the required identifiers.
-
-    Args:
-        movie_id (str): Internal movie identifier from BMS (hidden from end-user).
-        venue_id (str): Internal venue identifier from BMS (hidden from end-user).
-        session_id (str): Internal session identifier from BMS (hidden from end-user).
-        date (str): Show date in YYYYMMDD format.
-        city (str): Full city name (properly spelled).
-
-    Returns:
-        str: A direct link to the seat selection page for the given movie showtime.
-    """
     city_slug = slugify(city)
     return f"https://in.bookmyshow.com/movies/{city_slug}/seat-layout/{movie_id}/{venue_id}/{session_id}/{date}"
 
