@@ -40,7 +40,7 @@ for i, ch in enumerate(html[start:], start=start):
             if brace_count == 0 and json_start is not None:
                 json_str = html[json_start:i+1]
                 data = json.loads(json_str)
-                with open("dhadak2.json", "w", encoding="utf-8") as f:
+                with open("dhadak2(!).json", "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                 print("✅ Extracted and saved JSON to bms_state.json")
                 break
