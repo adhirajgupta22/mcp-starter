@@ -320,22 +320,21 @@ async def get_movie_venue_details(
     movie_slug = slugify(movie_name)
 
     # Step 1: Find movie_id if not provided
-    if not movie_id:
-        search_url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
-        encoded_url = urllib.parse.quote(search_url)
-        api_url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
-        resp = requests.get(api_url)
-        soup = BeautifulSoup(resp.text, "html.parser")
+    search_url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
+    encoded_url = urllib.parse.quote(search_url)
+    api_url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
+    resp = requests.get(api_url)
+    soup = BeautifulSoup(resp.text, "html.parser")
 
-        movie_id = None
-        for a in soup.find_all("a", href=True):
-            if f"/movies/{city_slug}/" in a["href"] and movie_slug in a["href"]:
-                parts = a["href"].rstrip("/").split("/")
-                if len(parts) >= 5:
-                    movie_id = parts[-1]
-                    break
-        if not movie_id:
-            raise ValueError(f"Movie '{movie_name}' not found in {city}.")
+    movie_id = None
+    for a in soup.find_all("a", href=True):
+        if f"/movies/{city_slug}/" in a["href"] and movie_slug in a["href"]:
+            parts = a["href"].rstrip("/").split("/")
+            if len(parts) >= 5:
+                movie_id = parts[-1]
+                break
+    if not movie_id:
+        raise ValueError(f"Movie '{movie_name}' not found in {city}.")
 
     # Step 2: Construct buytickets URL
     # movie_slug = movie_name.strip().lower().replace(" ", "-")
