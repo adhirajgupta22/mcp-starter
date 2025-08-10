@@ -270,7 +270,7 @@ def slugify(text):
 
 FETCH_VENUE_SHOWTIME_DESCRIPTION = RichToolDescription(
     description=(
-        "Fetch detailed venue, showtime, price based on seat deatils information for a specific movie in a given city on a particular date "
+        "Fetch detailed venues, showtime, price based on seat deatils information for a specific movie in a given city on a particular date "
     ),
     use_when=(
         "Use this tool when the user ask for venue details where he can watch movie , and provides the movie name,and date (if not consider the present date) and location(as provided)"
@@ -351,6 +351,8 @@ async def get_movie_venue_details(
         raise RuntimeError("Could not find _INITIAL_STATE_ in HTML")
 
     start += len(marker)
+    while start < len(html) and html[start] not in '{':
+        start += 1
     brace_count = 0
     in_string = False
     escaped = False
@@ -413,7 +415,12 @@ async def get_movie_venue_details(
                                 })
                             results.append(theatre_info)
 
-    return json.dumps(results, indent=2, ensure_ascii=False)
+    final_output = {
+        "movieId": movie_id,
+        "venues": results
+    }
+
+    return json.dumps(final_output, indent=2, ensure_ascii=False)
 
 
 # @mcp.tool(description=(
