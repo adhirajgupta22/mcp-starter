@@ -4,7 +4,7 @@ import json
 
 token = "c7cda0a41de3446abf92b8b0154c65e7922123609fe"
 
-targetUrl = urllib.parse.quote("https://in.bookmyshow.com/movies/kanpur/dhadak-2/buytickets/ET00399488/20250810")
+targetUrl = urllib.parse.quote("https://in.bookmyshow.com/movies/kanpur/saiyaara/buytickets/ET00447951/20250811")
 url = f"http://api.scrape.do/?token={token}&url={targetUrl}"
 
 html = requests.get(url).text
@@ -40,7 +40,7 @@ for i, ch in enumerate(html[start:], start=start):
             if brace_count == 0 and json_start is not None:
                 json_str = html[json_start:i+1]
                 data = json.loads(json_str)
-                with open("dhadak2(!).json", "w", encoding="utf-8") as f:
+                with open("saiyara.json", "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=2, ensure_ascii=False)
                 print("✅ Extracted and saved JSON to bms_state.json")
                 break
