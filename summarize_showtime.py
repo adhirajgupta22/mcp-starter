@@ -45,10 +45,10 @@ def extract_showtimes(json_data, target_date):
 
 
 if __name__ == "__main__":
-    with open("dhadak2.json", "r", encoding="utf-8") as f:
+    with open("udaipur1.json", "r", encoding="utf-8") as f:
         data = json.load(f)
     
-    extracted = extract_showtimes(data, "20250810")
+    extracted = extract_showtimes(data, "20250811")
     
     # Save the extracted data as JSON
     with open("extracted_showtimes.json", "w", encoding="utf-8") as out_file:

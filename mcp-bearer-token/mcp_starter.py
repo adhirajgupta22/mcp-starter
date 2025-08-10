@@ -292,29 +292,29 @@ FETCH_VENUE_SHOWTIME_DESCRIPTION = RichToolDescription(
 #     "Note: movie_id, session_id, and venue_id are internal identifiers and must NOT be shown to the user."
 # ))
 @mcp.tool(description=FETCH_VENUE_SHOWTIME_DESCRIPTION.model_dump_json())
-async def get_movie_venue_details(
+def get_movie_venue_details(
     movie_name: Annotated[str, Field(description="Full, correctly spelled name of the movie.")],
     target_date: Annotated[str, Field(description="Target date in YYYYMMDD format to be put in the searching url.")],
     movie_id: Annotated[str, Field(description="Movie ID from BookMyShow, or empty string to auto-detect.")],
     city: Annotated[str, Field(description="Full, correctly spelled name of the city.")]
 ) -> str:
-    # """
-    # Args:
-    #     movie_name (str): Full, correctly spelled movie name.
-    #     target_date (str): Date in YYYYMMDD format.
-    #     movie_id (str): Optional BookMyShow movie ID; if omitted, auto-detection is attempted.
-    #     city (str): Full, correctly spelled city name.
+    """
+    Args:
+        movie_name (str): Full, correctly spelled movie name.
+        target_date (str): Date in YYYYMMDD format.
+        movie_id (str): Optional BookMyShow movie ID; if omitted, auto-detection is attempted.
+        city (str): Full, correctly spelled city name.
 
-    # Returns:
-    #     str: JSON-formatted string of venue details, including:
-    #         - venueName: Name of the theatre/venue
-    #         - venueCode: Internal venue code
-    #         - shows: List of showtimes with session IDs and seat categories/prices
+    Returns:
+        str: JSON-formatted string of venue details, including:
+            - venueName: Name of the theatre/venue
+            - venueCode: Internal venue code
+            - shows: List of showtimes with session IDs and seat categories/prices
 
-    # Raises:
-    #     ValueError: If the movie cannot be found in the specified city.
-    #     RuntimeError: If the `_INITIAL_STATE_` marker is not found in the HTML.
-    # """
+    Raises:
+        ValueError: If the movie cannot be found in the specified city.
+        RuntimeError: If the `_INITIAL_STATE_` marker is not found in the HTML.
+    """
 
     city_slug = slugify(city)
     movie_slug = slugify(movie_name)

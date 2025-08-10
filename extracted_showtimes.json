@@ -4,24 +4,80 @@
         "venueCode": "INZS",
         "shows": [
             {
-                "time": "06:20 PM",
-                "sessionId": "70577",
+                "time": "10:00 AM",
+                "sessionId": "70611",
                 "categories": [
                     {
                         "seatType": "Royal Recliner",
-                        "price": "550.00"
+                        "price": "300.00"
                     },
                     {
                         "seatType": "Royal",
-                        "price": "270.00"
+                        "price": "170.00"
                     },
                     {
                         "seatType": "CLUB",
-                        "price": "240.00"
+                        "price": "150.00"
                     },
                     {
                         "seatType": "EXECUTIVE",
-                        "price": "220.00"
+                        "price": "140.00"
+                    }
+                ]
+            },
+            {
+                "time": "12:40 PM",
+                "sessionId": "70668",
+                "categories": [
+                    {
+                        "seatType": "Royal Recliner",
+                        "price": "560.00"
+                    }
+                ]
+            },
+            {
+                "time": "03:50 PM",
+                "sessionId": "70633",
+                "categories": [
+                    {
+                        "seatType": "Royal",
+                        "price": "210.00"
+                    },
+                    {
+                        "seatType": "CLUB",
+                        "price": "200.00"
+                    },
+                    {
+                        "seatType": "EXECUTIVE",
+                        "price": "170.00"
+                    }
+                ]
+            },
+            {
+                "time": "06:50 PM",
+                "sessionId": "70670",
+                "categories": [
+                    {
+                        "seatType": "Royal Recliner",
+                        "price": "580.00"
+                    }
+                ]
+            },
+            {
+                "time": "10:00 PM",
+                "sessionId": "70635",
+                "categories": [
+                    {
+                        "seatType": "Royal",
+                        "price": "230.00"
+                    },
+                    {
+                        "seatType": "CLUB",
+                        "price": "200.00"
+                    },
+                    {
+                        "seatType": "EXECUTIVE",
+                        "price": "180.00"
                     }
                 ]
             }
@@ -32,38 +88,82 @@
         "venueCode": "RAVE",
         "shows": [
             {
-                "time": "11:00 AM",
-                "sessionId": "6134",
+                "time": "01:05 PM",
+                "sessionId": "6175",
                 "categories": [
                     {
                         "seatType": "BRONZE",
-                        "price": "120.00"
+                        "price": "150.00"
                     },
                     {
                         "seatType": "SILVER",
-                        "price": "120.00"
+                        "price": "150.00"
                     },
                     {
                         "seatType": "GOLD",
-                        "price": "200.00"
+                        "price": "250.00"
                     },
                     {
                         "seatType": "EBONY",
-                        "price": "300.00"
+                        "price": "400.00"
                     }
                 ]
             },
             {
-                "time": "07:20 PM",
-                "sessionId": "6147",
+                "time": "03:55 PM",
+                "sessionId": "6176",
                 "categories": [
                     {
                         "seatType": "BRONZE",
-                        "price": "180.00"
+                        "price": "150.00"
                     },
                     {
                         "seatType": "SILVER",
-                        "price": "180.00"
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "250.00"
+                    },
+                    {
+                        "seatType": "EBONY",
+                        "price": "400.00"
+                    }
+                ]
+            },
+            {
+                "time": "06:45 PM",
+                "sessionId": "6177",
+                "categories": [
+                    {
+                        "seatType": "BRONZE",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "SILVER",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "250.00"
+                    },
+                    {
+                        "seatType": "EBONY",
+                        "price": "400.00"
+                    }
+                ]
+            },
+            {
+                "time": "10:10 PM",
+                "sessionId": "6183",
+                "categories": [
+                    {
+                        "seatType": "BRONZE",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "SILVER",
+                        "price": "150.00"
                     },
                     {
                         "seatType": "GOLD",
@@ -82,16 +182,66 @@
         "venueCode": "NYCH",
         "shows": [
             {
-                "time": "09:50 PM",
-                "sessionId": "12489",
+                "time": "10:30 AM",
+                "sessionId": "12500",
                 "categories": [
                     {
                         "seatType": "RECLINER",
-                        "price": "400.00"
+                        "price": "250.00"
                     },
                     {
                         "seatType": "PRIME",
-                        "price": "220.00"
+                        "price": "150.00"
+                    }
+                ]
+            },
+            {
+                "time": "01:00 PM",
+                "sessionId": "12491",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "350.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "190.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "170.00"
+                    }
+                ]
+            },
+            {
+                "time": "04:25 PM",
+                "sessionId": "12502",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "350.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "190.00"
+                    }
+                ]
+            },
+            {
+                "time": "07:00 PM",
+                "sessionId": "12493",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "350.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "190.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "170.00"
                     }
                 ]
             }
@@ -102,8 +252,52 @@
         "venueCode": "RMIK",
         "shows": [
             {
-                "time": "01:35 PM",
-                "sessionId": "12404",
+                "time": "11:15 AM",
+                "sessionId": "12413",
+                "categories": [
+                    {
+                        "seatType": "SILVER",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "170.00"
+                    },
+                    {
+                        "seatType": "PLATINUM",
+                        "price": "190.00"
+                    },
+                    {
+                        "seatType": "EBONY",
+                        "price": "400.00"
+                    }
+                ]
+            },
+            {
+                "time": "08:00 PM",
+                "sessionId": "12416",
+                "categories": [
+                    {
+                        "seatType": "SILVER",
+                        "price": "170.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "190.00"
+                    },
+                    {
+                        "seatType": "PLATINUM",
+                        "price": "210.00"
+                    },
+                    {
+                        "seatType": "EBONY",
+                        "price": "500.00"
+                    }
+                ]
+            },
+            {
+                "time": "10:50 PM",
+                "sessionId": "12417",
                 "categories": [
                     {
                         "seatType": "SILVER",
@@ -130,20 +324,74 @@
         "venueCode": "PSXM",
         "shows": [
             {
-                "time": "03:45 PM",
-                "sessionId": "10093",
+                "time": "09:55 AM",
+                "sessionId": "10122",
                 "categories": [
                     {
                         "seatType": "RECLINER",
-                        "price": "350.00"
-                    },
-                    {
-                        "seatType": "PRIME",
-                        "price": "240.00"
+                        "price": "210.00"
                     },
                     {
                         "seatType": "CLASSIC",
-                        "price": "210.00"
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "150.00"
+                    }
+                ]
+            },
+            {
+                "time": "01:05 PM",
+                "sessionId": "10123",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "290.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "200.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "170.00"
+                    }
+                ]
+            },
+            {
+                "time": "07:05 PM",
+                "sessionId": "10125",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "300.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "190.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "180.00"
+                    }
+                ]
+            },
+            {
+                "time": "09:55 PM",
+                "sessionId": "10116",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "300.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "190.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "180.00"
                     }
                 ]
             }
@@ -154,8 +402,8 @@
         "venueCode": "MCGP",
         "shows": [
             {
-                "time": "01:30 PM",
-                "sessionId": "34935",
+                "time": "04:30 PM",
+                "sessionId": "34956",
                 "categories": [
                     {
                         "seatType": "FIRST CLASS",
@@ -163,11 +411,29 @@
                     },
                     {
                         "seatType": "FAMILY",
-                        "price": "200.00"
+                        "price": "150.00"
                     },
                     {
                         "seatType": "BALCONY",
-                        "price": "250.00"
+                        "price": "150.00"
+                    }
+                ]
+            },
+            {
+                "time": "10:00 PM",
+                "sessionId": "34958",
+                "categories": [
+                    {
+                        "seatType": "FIRST CLASS",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "FAMILY",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "BALCONY",
+                        "price": "150.00"
                     }
                 ]
             }
@@ -178,30 +444,58 @@
         "venueCode": "PDDK",
         "shows": [
             {
-                "time": "01:05 PM",
-                "sessionId": "8826",
+                "time": "09:55 AM",
+                "sessionId": "8840",
                 "categories": [
                     {
-                        "seatType": "PRIME",
-                        "price": "280.00"
+                        "seatType": "CLASSIC",
+                        "price": "150.00"
                     },
                     {
-                        "seatType": "CLASSIC",
-                        "price": "210.00"
+                        "seatType": "PRIME",
+                        "price": "150.00"
                     }
                 ]
             },
             {
-                "time": "06:55 PM",
-                "sessionId": "8828",
+                "time": "01:25 PM",
+                "sessionId": "8836",
                 "categories": [
                     {
                         "seatType": "PRIME",
-                        "price": "230.00"
+                        "price": "200.00"
                     },
                     {
                         "seatType": "CLASSIC",
-                        "price": "220.00"
+                        "price": "150.00"
+                    }
+                ]
+            },
+            {
+                "time": "07:45 PM",
+                "sessionId": "8838",
+                "categories": [
+                    {
+                        "seatType": "PRIME",
+                        "price": "210.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "150.00"
+                    }
+                ]
+            },
+            {
+                "time": "10:55 PM",
+                "sessionId": "8839",
+                "categories": [
+                    {
+                        "seatType": "PRIME",
+                        "price": "210.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "150.00"
                     }
                 ]
             }
@@ -212,20 +506,176 @@
         "venueCode": "MCRL",
         "shows": [
             {
-                "time": "04:00 PM",
-                "sessionId": "15593",
+                "time": "10:10 AM",
+                "sessionId": "15650",
                 "categories": [
                     {
                         "seatType": "SILVER",
-                        "price": "160.00"
+                        "price": "130.00"
                     },
                     {
                         "seatType": "GOLD",
-                        "price": "180.00"
+                        "price": "130.00"
                     },
                     {
                         "seatType": "PLATINUM",
-                        "price": "180.00"
+                        "price": "130.00"
+                    }
+                ]
+            },
+            {
+                "time": "06:45 PM",
+                "sessionId": "15658",
+                "categories": [
+                    {
+                        "seatType": "SILVER",
+                        "price": "130.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "PLATINUM",
+                        "price": "150.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Shyam Palace Cinema: Kanpur",
+        "venueCode": "SPCK",
+        "shows": [
+            {
+                "time": "06:30 PM",
+                "sessionId": "30041",
+                "categories": [
+                    {
+                        "seatType": "Balcony",
+                        "price": "110.00"
+                    },
+                    {
+                        "seatType": "Gold Family",
+                        "price": "90.00"
+                    }
+                ]
+            },
+            {
+                "time": "09:15 PM",
+                "sessionId": "30061",
+                "categories": [
+                    {
+                        "seatType": "Balcony",
+                        "price": "110.00"
+                    },
+                    {
+                        "seatType": "Gold Family",
+                        "price": "90.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Movietime Cinemas: Ratan Himachal Mall, Kanpur",
+        "venueCode": "MHKT",
+        "shows": [
+            {
+                "time": "07:40 PM",
+                "sessionId": "9335",
+                "categories": [
+                    {
+                        "seatType": "GOLD",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "RECLINER",
+                        "price": "250.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Navrang Cineplex: Kanpur",
+        "venueCode": "ANRR",
+        "shows": [
+            {
+                "time": "09:50 AM",
+                "sessionId": "34717",
+                "categories": [
+                    {
+                        "seatType": "Gold",
+                        "price": "110.00"
+                    },
+                    {
+                        "seatType": "Silver",
+                        "price": "80.00"
+                    }
+                ]
+            },
+            {
+                "time": "12:30 PM",
+                "sessionId": "34720",
+                "categories": [
+                    {
+                        "seatType": "Gold",
+                        "price": "110.00"
+                    },
+                    {
+                        "seatType": "Silver",
+                        "price": "80.00"
+                    }
+                ]
+            },
+            {
+                "time": "09:30 PM",
+                "sessionId": "34729",
+                "categories": [
+                    {
+                        "seatType": "Gold",
+                        "price": "110.00"
+                    },
+                    {
+                        "seatType": "Silver",
+                        "price": "80.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Jugul Palace Cinema: Kanpur",
+        "venueCode": "JUGA",
+        "shows": [
+            {
+                "time": "08:00 AM",
+                "sessionId": "24946",
+                "categories": [
+                    {
+                        "seatType": "Balcony",
+                        "price": "110.00"
+                    }
+                ]
+            },
+            {
+                "time": "10:30 AM",
+                "sessionId": "24961",
+                "categories": [
+                    {
+                        "seatType": "Balcony",
+                        "price": "110.00"
+                    }
+                ]
+            },
+            {
+                "time": "01:10 PM",
+                "sessionId": "24956",
+                "categories": [
+                    {
+                        "seatType": "Balcony",
+                        "price": "110.00"
                     }
                 ]
             }
