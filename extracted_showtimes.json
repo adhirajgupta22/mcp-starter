@@ -1,0 +1,234 @@
+[
+    {
+        "venueName": "INOX: Z Square, Bada Chauraha",
+        "venueCode": "INZS",
+        "shows": [
+            {
+                "time": "06:20 PM",
+                "sessionId": "70577",
+                "categories": [
+                    {
+                        "seatType": "Royal Recliner",
+                        "price": "550.00"
+                    },
+                    {
+                        "seatType": "Royal",
+                        "price": "270.00"
+                    },
+                    {
+                        "seatType": "CLUB",
+                        "price": "240.00"
+                    },
+                    {
+                        "seatType": "EXECUTIVE",
+                        "price": "220.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Rave 3 AV Cinemas: Kanpur",
+        "venueCode": "RAVE",
+        "shows": [
+            {
+                "time": "11:00 AM",
+                "sessionId": "6134",
+                "categories": [
+                    {
+                        "seatType": "BRONZE",
+                        "price": "120.00"
+                    },
+                    {
+                        "seatType": "SILVER",
+                        "price": "120.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "200.00"
+                    },
+                    {
+                        "seatType": "EBONY",
+                        "price": "300.00"
+                    }
+                ]
+            },
+            {
+                "time": "07:20 PM",
+                "sessionId": "6147",
+                "categories": [
+                    {
+                        "seatType": "BRONZE",
+                        "price": "180.00"
+                    },
+                    {
+                        "seatType": "SILVER",
+                        "price": "180.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "250.00"
+                    },
+                    {
+                        "seatType": "EBONY",
+                        "price": "400.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "NY Cinemas: Heer Palace, Kanpur",
+        "venueCode": "NYCH",
+        "shows": [
+            {
+                "time": "09:50 PM",
+                "sessionId": "12489",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "400.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "220.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Rave Moti Cinemas: Kanpur",
+        "venueCode": "RMIK",
+        "shows": [
+            {
+                "time": "01:35 PM",
+                "sessionId": "12404",
+                "categories": [
+                    {
+                        "seatType": "SILVER",
+                        "price": "170.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "190.00"
+                    },
+                    {
+                        "seatType": "PLATINUM",
+                        "price": "210.00"
+                    },
+                    {
+                        "seatType": "EBONY",
+                        "price": "500.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "PVR: South X Mall, Kanpur",
+        "venueCode": "PSXM",
+        "shows": [
+            {
+                "time": "03:45 PM",
+                "sessionId": "10093",
+                "categories": [
+                    {
+                        "seatType": "RECLINER",
+                        "price": "350.00"
+                    },
+                    {
+                        "seatType": "PRIME",
+                        "price": "240.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "210.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Miraj Cinemas: Gurdev Pammi, Kanpur",
+        "venueCode": "MCGP",
+        "shows": [
+            {
+                "time": "01:30 PM",
+                "sessionId": "34935",
+                "categories": [
+                    {
+                        "seatType": "FIRST CLASS",
+                        "price": "150.00"
+                    },
+                    {
+                        "seatType": "FAMILY",
+                        "price": "200.00"
+                    },
+                    {
+                        "seatType": "BALCONY",
+                        "price": "250.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "PVR: Deep, Kanpur",
+        "venueCode": "PDDK",
+        "shows": [
+            {
+                "time": "01:05 PM",
+                "sessionId": "8826",
+                "categories": [
+                    {
+                        "seatType": "PRIME",
+                        "price": "280.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "210.00"
+                    }
+                ]
+            },
+            {
+                "time": "06:55 PM",
+                "sessionId": "8828",
+                "categories": [
+                    {
+                        "seatType": "PRIME",
+                        "price": "230.00"
+                    },
+                    {
+                        "seatType": "CLASSIC",
+                        "price": "220.00"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "venueName": "Movietime Cinemas: Ratan Elegance, Kanpur",
+        "venueCode": "MCRL",
+        "shows": [
+            {
+                "time": "04:00 PM",
+                "sessionId": "15593",
+                "categories": [
+                    {
+                        "seatType": "SILVER",
+                        "price": "160.00"
+                    },
+                    {
+                        "seatType": "GOLD",
+                        "price": "180.00"
+                    },
+                    {
+                        "seatType": "PLATINUM",
+                        "price": "180.00"
+                    }
+                ]
+            }
+        ]
+    }
+]

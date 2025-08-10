@@ -9,10 +9,14 @@ from mcp.server.auth.provider import AccessToken
 from mcp.types import TextContent, ImageContent, INVALID_PARAMS, INTERNAL_ERROR
 from pydantic import BaseModel, Field, AnyUrl
 
+import requests
+from bs4 import BeautifulSoup
 import urllib.parse
-from fastapi import Request
-from fastmcp.server.fastapi_server import get_fastapi_app
+import json
+from typing import Annotated
+from pydantic import Field
 
+import urllib.parse
 
 import markdownify
 import httpx
@@ -23,19 +27,9 @@ load_dotenv()
 
 TOKEN = os.environ.get("AUTH_TOKEN")
 MY_NUMBER = os.environ.get("MY_NUMBER")
-GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID")
-GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET")
-REDIRECT_URI = "https://mcp-starter-8jmd.onrender.com/oauth2callback"
 
 assert TOKEN is not None, "Please set AUTH_TOKEN in your .env file"
 assert MY_NUMBER is not None, "Please set MY_NUMBER in your .env file"
-
-assert GOOGLE_CLIENT_ID, "Please set GOOGLE_CLIENT_ID in your .env"
-assert GOOGLE_CLIENT_SECRET, "Please set GOOGLE_CLIENT_SECRET in your .env"
-
-SCOPES = [
-    "https://www.googleapis.com/auth/gmail.readonly"
-]  # minimal scope just for testing
 
 # --- Auth Provider ---
 class SimpleBearerAuthProvider(BearerAuthProvider):
@@ -218,54 +212,48 @@ async def make_img_black_and_white(
     except Exception as e:
         raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(e)))
 
-GMAIL_OAUTH_DESCRIPTION = RichToolDescription(
-    description="Start Gmail authentication via Google OAuth 2.0 to allow reading and sending emails.",
-    use_when="Use this when the user wants to connect their Gmail account or grant access to their emails.",
-    side_effects="Opens a Google login & consent screen; once approved, the server receives tokens for API access."
-)
-@mcp.tool(description=GMAIL_OAUTH_DESCRIPTION.model_dump_json())
-async def get_gmail_consent_url() -> str:
-    base_url = "https://accounts.google.com/o/oauth2/v2/auth"
-    params = {
-        "client_id": GOOGLE_CLIENT_ID,
-        "redirect_uri": REDIRECT_URI,
-        "response_type": "code",
-        "scope": " ".join(SCOPES),
-        "access_type": "offline",
-        "prompt": "consent",
-    }
-    consent_url = f"{base_url}?{urllib.parse.urlencode(params)}"
-    return f"Click here to authorize Gmail access: {consent_url}"
+@mcp.tool(description="Fetches movies for a given city from BookMyShow and returns JSON with id and name.")
+async def get_movies(
+    city: Annotated[str, Field(description="City name for which to get movies")]
+) -> str:
+    """
+    Scrapes the BookMyShow website for the given city using the scrape.do API
+    and returns a JSON-formatted string containing a list of movies with their
+    unique IDs and names.
 
-app = get_fastapi_app()
+    Args:
+        city (str): Name of the city (e.g., 'Mumbai', 'Kanpur').
 
-@app.get("/oauth2callback")
-async def oauth2callback(request: Request):
-    code = request.query_params.get("code")
-    if not code:
-        return {"error": "No code received"}
+    Returns:
+        str: A JSON string in the format:
+            {
+                "movies": [
+                    {"id": "<movie_id>", "name": "<Movie Name>"},
+                    ...
+                ]
+            }
+    """
+    token = os.environ.get("API_TOKEN")  # scrape.do token
+    city_slug = city.strip().lower().replace(" ", "-")
+    url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
+    encoded_url = urllib.parse.quote(url)
+    api_url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
 
-    # Exchange code for tokens
-    async with httpx.AsyncClient() as client:
-        token_resp = await client.post(
-            "https://oauth2.googleapis.com/token",
-            data={
-                "code": code,
-                "client_id": GOOGLE_CLIENT_ID,
-                "client_secret": GOOGLE_CLIENT_SECRET,
-                "redirect_uri": REDIRECT_URI,
-                "grant_type": "authorization_code",
-            },
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-        )
+    resp = requests.get(api_url)
+    soup = BeautifulSoup(resp.text, "html.parser")
 
-    if token_resp.status_code != 200:
-        print(f"❌ Token exchange failed: {token_resp.text}")
-        return {"error": "Token exchange failed", "details": token_resp.text}
+    movies = []
+    for a in soup.find_all("a", href=True):
+        if f"/movies/{city_slug}/" in a["href"]:
+            parts = a["href"].rstrip("/").split("/")
+            if len(parts) >= 5:
+                movie_name_slug = parts[-2]
+                movie_id = parts[-1]
+                movie_name = movie_name_slug.replace("-", " ").title()
+                movies.append({"id": movie_id, "name": movie_name})
 
-    tokens = token_resp.json()
-    print("✅ Received tokens from Google:", tokens)  # Will show in Render logs
-    return {"message": "OAuth successful! Check Render logs for tokens."}
+    unique_movies = {m["id"]: m for m in movies}
+    return json.dumps({"movies": list(unique_movies.values())}, ensure_ascii=False)
 
 # --- Run MCP Server ---
 async def main():
@@ -274,3 +262,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+
