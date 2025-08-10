@@ -334,7 +334,7 @@ async def get_movie_venue_details(
 
     # Step 3: Extract JSON from _INITIAL_STATE_
     html = requests.get(scrape_url).text
-    marker = "__INITIAL_STATE__ ="
+    marker = "__INITIAL_STATE__"
     start = html.find(marker)
     if start == -1:
         raise RuntimeError("Could not find _INITIAL_STATE_ in HTML")
