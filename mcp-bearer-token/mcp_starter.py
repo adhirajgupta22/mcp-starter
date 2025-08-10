@@ -417,7 +417,7 @@ def slugify(text):
     "Note: movie_id, session_id, and venue_id are internal identifiers and must NOT be shown to the user."
 ))
 async def book_movie_tickets(
-    movie_id: Annotated[str, Field(description="The exact internal movie ID (e.g., ET00440409)")],
+    movie_id: Annotated[str, Field(description="The exact internal movie ID (e.g., ET00440409) or can be None")],
     venue_n : Annotated[str, Field(description="The exact venue name (e.g., INOX)")],
     movie_name: Annotated[str, Field(description="The exact movie name (e.g., Dhadak 2)")],
     time: Annotated[str, Field(description="The exact time (e.g., 12:00)")],
@@ -428,7 +428,7 @@ async def book_movie_tickets(
     Constructs the full BookMyShow seat-layout URL for a specific movie showtime, given the required identifiers.
 
     Args:
-        movie_id (str): Internal movie identifier from BMS
+        movie_id (str): Internal movie identifier from BMS or can be None
         movie_name (str): Exact movie name as listed on BMS
         venue_name (str): Internal venue name from BMS
         time (str): Time slot for the movie
@@ -441,17 +441,36 @@ async def book_movie_tickets(
 
     city_slug = slugify(city)
     movie_slug = slugify(movie_name)
-    """Fetches BookMyShow _INITIAL_STATE_ JSON and extracts venue→id, time→session_id mapping."""
-    # Step 1: Fetch _INITIAL_STATE_ JSON
+
+    # Step 1: Find movie_id if not provided
+    if not movie_id:
+        search_url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
+        encoded_url = urllib.parse.quote(search_url)
+        api_url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
+        resp = requests.get(api_url)
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        movie_id = None
+        for a in soup.find_all("a", href=True):
+            if f"/movies/{city_slug}/" in a["href"] and movie_name.lower().replace(" ", "-") in a["href"]:
+                parts = a["href"].rstrip("/").split("/")
+                if len(parts) >= 5:
+                    movie_id = parts[-1]
+                    break
+        if not movie_id:
+            raise ValueError(f"Movie '{movie_name}' not found in {city}.")
+        
+    """Fetches BookMyShow INITIAL_STATE JSON and extracts venue→id, time→session_id mapping."""
+    # Step 1: Fetch INITIAL_STATE JSON
     target_url = f"https://in.bookmyshow.com/movies/{city_slug}/{movie_slug}/buytickets/{movie_id}/{date}"
     encoded_url = urllib.parse.quote(target_url)
     url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
 
     html = requests.get(url).text
-    marker = "__INITIAL_STATE__"
+    marker = "INITIAL_STATE"
     start = html.find(marker)
     if start == -1:
-        raise RuntimeError("Could not find _INITIAL_STATE_ in HTML")
+        raise RuntimeError("Could not find INITIAL_STATE in HTML")
 
     start += len(marker)
 
@@ -486,7 +505,7 @@ async def book_movie_tickets(
                     break
 
     if not json_data:
-        raise RuntimeError("Could not parse _INITIAL_STATE_ JSON")
+        raise RuntimeError("Could not parse INITIAL_STATE JSON")
 
     # Step 2: Extract mapping list
     mapping_list = []
@@ -531,7 +550,7 @@ async def book_movie_tickets(
     # Now search for entry with the best-matching venue name and exact time
     for entry in mapping_list:
         if entry["venueName"].strip().lower() == best_match and entry["timer"].strip().lower() == show_time_lower:
-            return f"https://in.bookmyshow.com/movies/{city_slug}/seat-layout/{movie_id}/{entry["venueCode"]}/{entry["sessionId"]}/{date}"  
+            return f"https://in.bookmyshow.com/movies/{city_slug}/seat-layout/{movie_id}/{entry['venueCode']}/{entry['sessionId']}/{date}"
     return None
 
 # --- Run MCP Server ---
