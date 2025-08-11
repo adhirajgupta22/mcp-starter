@@ -119,7 +119,7 @@ def get_movie_venue_details(movie_name: str, target_date: str, movie_id: str, ci
 
 if __name__ == "__main__":
     # Replace these values with what you want to test
-    movie_name = "son of sardaar 2"
+    movie_name = "zora"
     target_date = "20250811"
     movie_id = ""  # empty string to auto-detect
     city = "Kanpur"

@@ -140,79 +140,79 @@ async def validate() -> str:
     return MY_NUMBER
 
 # --- Tool: job_finder (now smart!) ---
-JobFinderDescription = RichToolDescription(
-    description="Smart job tool: analyze descriptions, fetch URLs, or search jobs based on free text.",
-    use_when="Use this to evaluate job descriptions or search for jobs using freeform goals.",
-    side_effects="Returns insights, fetched job descriptions, or relevant job links.",
-)
+# JobFinderDescription = RichToolDescription(
+#     description="Smart job tool: analyze descriptions, fetch URLs, or search jobs based on free text.",
+#     use_when="Use this to evaluate job descriptions or search for jobs using freeform goals.",
+#     side_effects="Returns insights, fetched job descriptions, or relevant job links.",
+# )
 
-@mcp.tool(description=JobFinderDescription.model_dump_json())
-async def job_finder(
-    user_goal: Annotated[str, Field(description="The user's goal (can be a description, intent, or freeform query)")],
-    job_description: Annotated[str | None, Field(description="Full job description text, if available.")] = None,
-    job_url: Annotated[AnyUrl | None, Field(description="A URL to fetch a job description from.")] = None,
-    raw: Annotated[bool, Field(description="Return raw HTML content if True")] = False,
-) -> str:
-    """
-    Handles multiple job discovery methods: direct description, URL fetch, or freeform search query.
-    """
-    if job_description:
-        return (
-            f"📝 **Job Description Analysis**\n\n"
-            f"---\n{job_description.strip()}\n---\n\n"
-            f"User Goal: **{user_goal}**\n\n"
-            f"💡 Suggestions:\n- Tailor your resume.\n- Evaluate skill match.\n- Consider applying if relevant."
-        )
+# @mcp.tool(description=JobFinderDescription.model_dump_json())
+# async def job_finder(
+#     user_goal: Annotated[str, Field(description="The user's goal (can be a description, intent, or freeform query)")],
+#     job_description: Annotated[str | None, Field(description="Full job description text, if available.")] = None,
+#     job_url: Annotated[AnyUrl | None, Field(description="A URL to fetch a job description from.")] = None,
+#     raw: Annotated[bool, Field(description="Return raw HTML content if True")] = False,
+# ) -> str:
+#     """
+#     Handles multiple job discovery methods: direct description, URL fetch, or freeform search query.
+#     """
+#     if job_description:
+#         return (
+#             f"📝 **Job Description Analysis**\n\n"
+#             f"---\n{job_description.strip()}\n---\n\n"
+#             f"User Goal: **{user_goal}**\n\n"
+#             f"💡 Suggestions:\n- Tailor your resume.\n- Evaluate skill match.\n- Consider applying if relevant."
+#         )
 
-    if job_url:
-        content, _ = await Fetch.fetch_url(str(job_url), Fetch.USER_AGENT, force_raw=raw)
-        return (
-            f"🔗 **Fetched Job Posting from URL**: {job_url}\n\n"
-            f"---\n{content.strip()}\n---\n\n"
-            f"User Goal: **{user_goal}**"
-        )
+#     if job_url:
+#         content, _ = await Fetch.fetch_url(str(job_url), Fetch.USER_AGENT, force_raw=raw)
+#         return (
+#             f"🔗 **Fetched Job Posting from URL**: {job_url}\n\n"
+#             f"---\n{content.strip()}\n---\n\n"
+#             f"User Goal: **{user_goal}**"
+#         )
 
-    if "look for" in user_goal.lower() or "find" in user_goal.lower():
-        links = await Fetch.google_search_links(user_goal)
-        return (
-            f"🔍 **Search Results for**: _{user_goal}_\n\n" +
-            "\n".join(f"- {link}" for link in links)
-        )
+#     if "look for" in user_goal.lower() or "find" in user_goal.lower():
+#         links = await Fetch.google_search_links(user_goal)
+#         return (
+#             f"🔍 **Search Results for**: _{user_goal}_\n\n" +
+#             "\n".join(f"- {link}" for link in links)
+#         )
 
-    raise McpError(ErrorData(code=INVALID_PARAMS, message="Please provide either a job description, a job URL, or a search query in user_goal."))
+#     raise McpError(ErrorData(code=INVALID_PARAMS, message="Please provide either a job description, a job URL, or a search query in user_goal."))
 
 
 # Image inputs and sending images
 
-MAKE_IMG_BLACK_AND_WHITE_DESCRIPTION = RichToolDescription(
-    description="Convert an image to black and white and save it.",
-    use_when="Use this tool when the user provides an image URL and requests it to be converted to black and white.",
-    side_effects="The image will be processed and saved in a black and white format.",
-)
+# MAKE_IMG_BLACK_AND_WHITE_DESCRIPTION = RichToolDescription(
+#     description="Convert an image to black and white and save it.",
+#     use_when="Use this tool when the user provides an image URL and requests it to be converted to black and white.",
+#     side_effects="The image will be processed and saved in a black and white format.",
+# )
 
-@mcp.tool(description=MAKE_IMG_BLACK_AND_WHITE_DESCRIPTION.model_dump_json())
-async def make_img_black_and_white(
-    puch_image_data: Annotated[str, Field(description="Base64-encoded image data to convert to black and white")] = None,
-) -> list[TextContent | ImageContent]:
-    import base64
-    import io
+# @mcp.tool(description=MAKE_IMG_BLACK_AND_WHITE_DESCRIPTION.model_dump_json())
+# async def make_img_black_and_white(
+#     puch_image_data: Annotated[str, Field(description="Base64-encoded image data to convert to black and white")] = None,
+# ) -> list[TextContent | ImageContent]:
+#     import base64
+#     import io
 
-    from PIL import Image
+#     from PIL import Image
 
-    try:
-        image_bytes = base64.b64decode(puch_image_data)
-        image = Image.open(io.BytesIO(image_bytes))
+#     try:
+#         image_bytes = base64.b64decode(puch_image_data)
+#         image = Image.open(io.BytesIO(image_bytes))
 
-        bw_image = image.convert("L")
+#         bw_image = image.convert("L")
 
-        buf = io.BytesIO()
-        bw_image.save(buf, format="PNG")
-        bw_bytes = buf.getvalue()
-        bw_base64 = base64.b64encode(bw_bytes).decode("utf-8")
+#         buf = io.BytesIO()
+#         bw_image.save(buf, format="PNG")
+#         bw_bytes = buf.getvalue()
+#         bw_base64 = base64.b64encode(bw_bytes).decode("utf-8")
 
-        return [ImageContent(type="image", mimeType="image/png", data=bw_base64)]
-    except Exception as e:
-        raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(e)))
+#         return [ImageContent(type="image", mimeType="image/png", data=bw_base64)]
+#     except Exception as e:
+#         raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(e)))
 
 token = os.environ.get("API_TOKEN")
 FETCH_MOVIES_DESCRIPTION = RichToolDescription(
@@ -222,7 +222,7 @@ FETCH_MOVIES_DESCRIPTION = RichToolDescription(
 )
 @mcp.tool(description=FETCH_MOVIES_DESCRIPTION.model_dump_json())
 
-async def get_movies(
+def get_movies(
     city: Annotated[str, Field(description="City name for which to get movies")]
 ) -> str:
     """
@@ -277,6 +277,7 @@ FETCH_VENUE_SHOWTIME_DESCRIPTION = RichToolDescription(
         "and wants to get venue and showtime , price information for booking."
     ),
     side_effects=(
+        "Returns a JSON-formatted string containing venue details, including venue name, venue code, and showtimes with session IDs and seat categories/prices."
         "Returns internal identifiers such as movie_id, session_id, and venue_id which must NOT be shown to the user, "
         "but should be retained for internal processing and should be used as a input for the tool book_movie_tickets if needed."
     )
