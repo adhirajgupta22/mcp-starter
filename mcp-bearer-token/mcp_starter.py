@@ -292,12 +292,13 @@ FETCH_VENUE_SHOWTIME_DESCRIPTION = RichToolDescription(
 #     "4. Inputs must be exact — incorrect spelling, partial names, or wrong formats will result in no data.\n"
 #     "Note: movie_id, session_id, and venue_id are internal identifiers and must NOT be shown to the user."
 # ))
+from typing import Optional
 @mcp.tool(description=FETCH_VENUE_SHOWTIME_DESCRIPTION.model_dump_json())
 def get_movie_venue_details(
-    movie_name: Annotated[str, Field(description="Full, correctly spelled name of the movie.")],
-    target_date: Annotated[str, Field(description="Target date in YYYYMMDD format to be put in the searching url.")],
-    movie_id: Annotated[str, Field(description="Movie ID from BookMyShow, or empty string to auto-detect.")],
-    city: Annotated[str, Field(description="Full, correctly spelled name of the city.")]
+    movie_name: str,
+    target_date: str,
+    movie_id: Optional[str] = "",
+    city: str = "Kanpur"
 ) -> str:
     """
     Args:
