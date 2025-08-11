@@ -147,7 +147,7 @@ FETCH_MOVIES_DESCRIPTION = RichToolDescription(
 )
 @mcp.tool(description=FETCH_MOVIES_DESCRIPTION.model_dump_json())
 
-def get_movies(
+async def get_movies(
     city: Annotated[str, Field(description="City name for which to get movies")]
 ) -> str:
     """
@@ -219,7 +219,7 @@ FETCH_VENUE_SHOWTIME_DESCRIPTION = RichToolDescription(
 # ))
 from typing import Optional
 @mcp.tool(description=FETCH_VENUE_SHOWTIME_DESCRIPTION.model_dump_json())
-def get_movie_venue_details(
+async def get_movie_venue_details(
     movie_name: str,
     target_date: str,
     movie_id: Optional[str] = "",
@@ -353,7 +353,8 @@ def get_movie_venue_details(
 # --- Run MCP Server ---
 async def main():
     print("🚀 Starting MCP server on http://0.0.0.0:8086")
-    await mcp.run_async("streamable-http", host="0.0.0.0", port=8086)
+    port = int(os.environ.get("PORT", 8080))
+    await mcp.run_async("streamable-http", host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     asyncio.run(main())
