@@ -139,81 +139,6 @@ mcp = FastMCP(
 async def validate() -> str:
     return MY_NUMBER
 
-# --- Tool: job_finder (now smart!) ---
-# JobFinderDescription = RichToolDescription(
-#     description="Smart job tool: analyze descriptions, fetch URLs, or search jobs based on free text.",
-#     use_when="Use this to evaluate job descriptions or search for jobs using freeform goals.",
-#     side_effects="Returns insights, fetched job descriptions, or relevant job links.",
-# )
-
-# @mcp.tool(description=JobFinderDescription.model_dump_json())
-# async def job_finder(
-#     user_goal: Annotated[str, Field(description="The user's goal (can be a description, intent, or freeform query)")],
-#     job_description: Annotated[str | None, Field(description="Full job description text, if available.")] = None,
-#     job_url: Annotated[AnyUrl | None, Field(description="A URL to fetch a job description from.")] = None,
-#     raw: Annotated[bool, Field(description="Return raw HTML content if True")] = False,
-# ) -> str:
-#     """
-#     Handles multiple job discovery methods: direct description, URL fetch, or freeform search query.
-#     """
-#     if job_description:
-#         return (
-#             f"📝 **Job Description Analysis**\n\n"
-#             f"---\n{job_description.strip()}\n---\n\n"
-#             f"User Goal: **{user_goal}**\n\n"
-#             f"💡 Suggestions:\n- Tailor your resume.\n- Evaluate skill match.\n- Consider applying if relevant."
-#         )
-
-#     if job_url:
-#         content, _ = await Fetch.fetch_url(str(job_url), Fetch.USER_AGENT, force_raw=raw)
-#         return (
-#             f"🔗 **Fetched Job Posting from URL**: {job_url}\n\n"
-#             f"---\n{content.strip()}\n---\n\n"
-#             f"User Goal: **{user_goal}**"
-#         )
-
-#     if "look for" in user_goal.lower() or "find" in user_goal.lower():
-#         links = await Fetch.google_search_links(user_goal)
-#         return (
-#             f"🔍 **Search Results for**: _{user_goal}_\n\n" +
-#             "\n".join(f"- {link}" for link in links)
-#         )
-
-#     raise McpError(ErrorData(code=INVALID_PARAMS, message="Please provide either a job description, a job URL, or a search query in user_goal."))
-
-
-# Image inputs and sending images
-
-# MAKE_IMG_BLACK_AND_WHITE_DESCRIPTION = RichToolDescription(
-#     description="Convert an image to black and white and save it.",
-#     use_when="Use this tool when the user provides an image URL and requests it to be converted to black and white.",
-#     side_effects="The image will be processed and saved in a black and white format.",
-# )
-
-# @mcp.tool(description=MAKE_IMG_BLACK_AND_WHITE_DESCRIPTION.model_dump_json())
-# async def make_img_black_and_white(
-#     puch_image_data: Annotated[str, Field(description="Base64-encoded image data to convert to black and white")] = None,
-# ) -> list[TextContent | ImageContent]:
-#     import base64
-#     import io
-
-#     from PIL import Image
-
-#     try:
-#         image_bytes = base64.b64decode(puch_image_data)
-#         image = Image.open(io.BytesIO(image_bytes))
-
-#         bw_image = image.convert("L")
-
-#         buf = io.BytesIO()
-#         bw_image.save(buf, format="PNG")
-#         bw_bytes = buf.getvalue()
-#         bw_base64 = base64.b64encode(bw_bytes).decode("utf-8")
-
-#         return [ImageContent(type="image", mimeType="image/png", data=bw_base64)]
-#     except Exception as e:
-#         raise McpError(ErrorData(code=INTERNAL_ERROR, message=str(e)))
-
 token = os.environ.get("API_TOKEN")
 FETCH_MOVIES_DESCRIPTION = RichToolDescription(
     description="Fetches all the movies for a given city from BookMyShow which the user can watch in theatres and returns JSON with id and name.",
@@ -322,21 +247,22 @@ def get_movie_venue_details(
     movie_slug = slugify(movie_name)
 
     # Step 1: Find movie_id if not provided
-    search_url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
-    encoded_url = urllib.parse.quote(search_url)
-    api_url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
-    resp = requests.get(api_url)
-    soup = BeautifulSoup(resp.text, "html.parser")
-
-    movie_id = None
-    for a in soup.find_all("a", href=True):
-        if f"/movies/{city_slug}/" in a["href"] and movie_slug in a["href"]:
-            parts = a["href"].rstrip("/").split("/")
-            if len(parts) >= 5:
-                movie_id = parts[-1]
-                break
     if not movie_id:
-        raise ValueError(f"Movie '{movie_name}' not found in {city}.")
+        search_url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
+        encoded_url = urllib.parse.quote(search_url)
+        api_url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
+        resp = requests.get(api_url)
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        movie_id = None
+        for a in soup.find_all("a", href=True):
+            if f"/movies/{city_slug}/" in a["href"] and movie_slug in a["href"]:
+                parts = a["href"].rstrip("/").split("/")
+                if len(parts) >= 5:
+                    movie_id = parts[-1]
+                    break
+        if not movie_id:
+            raise ValueError(f"Movie '{movie_name}' not found in {city}.")
 
     # Step 2: Construct buytickets URL
     # movie_slug = movie_name.strip().lower().replace(" ", "-")
@@ -422,150 +348,6 @@ def get_movie_venue_details(
     }
 
     return json.dumps(final_output, indent=2, ensure_ascii=False)
-
-
-# @mcp.tool(description=(
-#     "This tool is for the booking of movie tickets. It Generates a direct seat-layout link on BookMyShow for booking tickets. "
-#     "Inputs must be provided exactly as specified: 'movie_id','movie_name', 'venue_name', 'time', 'date' (YYYYMMDD), and 'city' (full, correct name). "
-#     "The returned link takes the user directly to the seat selection page. "
-#     "Note: movie_id, session_id, and venue_id are internal identifiers and must NOT be shown to the user."
-# ))
-# async def book_movie_tickets(
-#     movie_id: Annotated[str, Field(description="The exact internal movie ID (e.g., ET00440409) or can be None")],
-#     venue_n : Annotated[str, Field(description="The exact venue name (e.g., INOX)")],
-#     movie_name: Annotated[str, Field(description="The exact movie name (e.g., Dhadak 2)")],
-#     time: Annotated[str, Field(description="The exact time (e.g., 12:00)")],
-#     date: Annotated[str, Field(description="Date of the show in YYYYMMDD format (e.g., 20250810)")],
-#     city: Annotated[str, Field(description="Full, correct city name (e.g., Kanpur)")]
-# ) -> str:
-#     """
-#     Constructs the full BookMyShow seat-layout URL for a specific movie showtime, given the required identifiers.
-
-#     Args:
-#         movie_id (str): Internal movie identifier from BMS or can be None
-#         movie_name (str): Exact movie name as listed on BMS
-#         venue_name (str): Internal venue name from BMS
-#         time (str): Time slot for the movie
-#         date (str): Show date in YYYYMMDD format.
-#         city (str): Full city name (properly spelled).
-
-#     Returns:
-#         str: A direct link to the seat selection page for the given movie showtime.
-#     """
-
-#     city_slug = slugify(city)
-#     movie_slug = slugify(movie_name)
-
-#     # Step 1: Find movie_id if not provided
-#     if not movie_id:
-#         search_url = f"https://in.bookmyshow.com/explore/movies-{city_slug}"
-#         encoded_url = urllib.parse.quote(search_url)
-#         api_url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
-#         resp = requests.get(api_url)
-#         soup = BeautifulSoup(resp.text, "html.parser")
-
-#         movie_id = None
-#         for a in soup.find_all("a", href=True):
-#             if f"/movies/{city_slug}/" in a["href"] and movie_name.lower().replace(" ", "-") in a["href"]:
-#                 parts = a["href"].rstrip("/").split("/")
-#                 if len(parts) >= 5:
-#                     movie_id = parts[-1]
-#                     break
-#         if not movie_id:
-#             raise ValueError(f"Movie '{movie_name}' not found in {city}.")
-        
-#     """Fetches BookMyShow INITIAL_STATE JSON and extracts venue→id, time→session_id mapping."""
-#     # Step 1: Fetch INITIAL_STATE JSON
-#     target_url = f"https://in.bookmyshow.com/movies/{city_slug}/{movie_slug}/buytickets/{movie_id}/{date}"
-#     encoded_url = urllib.parse.quote(target_url)
-#     url = f"http://api.scrape.do/?token={token}&url={encoded_url}"
-
-#     html = requests.get(url).text
-#     marker = "INITIAL_STATE"
-#     start = html.find(marker)
-#     if start == -1:
-#         raise RuntimeError("Could not find INITIAL_STATE in HTML")
-
-#     start += len(marker)
-
-#     # Extract JSON using brace counting
-#     brace_count = 0
-#     in_string = False
-#     escaped = False
-#     json_start = None
-#     json_data = None
-#     for i, ch in enumerate(html[start:], start=start):
-#         if ch == '"' and not escaped:
-#             in_string = not in_string
-#         elif ch == "\\" and in_string:
-#             escaped = not escaped
-#             continue
-#         else:
-#             escaped = False
-
-#         if not in_string:
-#             if ch == '{':
-#                 if brace_count == 0:
-#                     json_start = i
-#                 brace_count += 1
-#             elif ch == '}':
-#                 brace_count -= 1
-#                 if brace_count == 0 and json_start is not None:
-#                     json_str = html[json_start:i+1]
-#                     json_data = json.loads(json_str)
-#                     with open("bms_state.json", "w", encoding="utf-8") as f:
-#                         json.dump(json_data, f, indent=2, ensure_ascii=False)
-#                     print("✅ Extracted and saved JSON to bms_state.json")
-#                     break
-
-#     if not json_data:
-#         raise RuntimeError("Could not parse INITIAL_STATE JSON")
-
-#     # Step 2: Extract mapping list
-#     mapping_list = []
-#     show_dates = json_data.get("showtimesByEvent", {}).get("showDates", {})
-#     date_obj = show_dates.get(date, {})
-#     widgets = date_obj.get("dynamic", {}).get("data", {}).get("showtimeWidgets", [])
-
-#     for widget in widgets:
-#         if widget.get("type") == "groupList" and widget.get("id") == "List_1":
-#             for group in widget.get("data", []):
-#                 if group.get("type") == "venueGroup" and group.get("id") == "Venue_GROUP_1":
-#                     for venue in group.get("data", []):
-#                         if venue.get("type") == "venue-card":
-#                             vdata = venue.get("additionalData", {})
-#                             venue_name = vdata.get("venueName")
-#                             venue_code = vdata.get("venueCode")
-
-#                             for show in venue.get("showtimes", []):
-#                                 show_time = show.get("title") or show.get("showTime")
-#                                 session_id = show.get("additionalData", {}).get("sessionId")
-#                                 mapping_list.append({
-#                                     "venueName": venue_name,
-#                                     "venueCode": venue_code,
-#                                     "timer": show_time,
-#                                     "sessionId": session_id
-#                                 })
-
-#     venue_name_lower = venue_n.strip().lower()
-#     show_time_lower = time.strip().lower()
-
-#     # Get all unique venue names from mapping_list
-#     venue_names_in_mapping = [entry["venueName"].strip().lower() for entry in mapping_list]
-
-#     # Find closest match to user's input
-#     closest_matches = difflib.get_close_matches(venue_name_lower, venue_names_in_mapping, n=1, cutoff=0.6)
-
-#     if not closest_matches:
-#         return None  # No similar venue found
-
-#     best_match = closest_matches[0]
-
-#     # Now search for entry with the best-matching venue name and exact time
-#     for entry in mapping_list:
-#         if entry["venueName"].strip().lower() == best_match and entry["timer"].strip().lower() == show_time_lower:
-#             return f"https://in.bookmyshow.com/movies/{city_slug}/seat-layout/{movie_id}/{entry['venueCode']}/{entry['sessionId']}/{date}"
-#     return None
 
 
 # --- Run MCP Server ---
