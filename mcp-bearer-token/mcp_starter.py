@@ -134,10 +134,6 @@ mcp = FastMCP(
     auth=SimpleBearerAuthProvider(TOKEN),
 )
 
-@mcp.tool
-async def about() -> dict:
-    return {"name": "Want to watch movie? price? venue ? all here in one command", "description": "This server can give u the details of the movies there prices and venues in just 1-2 simple commands and can also provide direct links to book ticekts just by selecting how many seats and do the payment on BookMyShow app. The tools are proeprly based on book my show a lot of scraping is done from it"}
-
 # --- Tool: validate (required by Puch) ---
 @mcp.tool
 async def validate() -> str:
@@ -227,7 +223,7 @@ async def get_movie_venue_details(
     movie_name: str,
     target_date: str,
     movie_id: Optional[str] = "",
-    city: str = "Kanpur"
+    city: str = ""
 ) -> str:
     """
     Args:
